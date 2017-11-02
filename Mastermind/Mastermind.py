@@ -1,6 +1,6 @@
 #__author__ = 'zaq92_000'
 import random  #for random fun
-
+import pygame
 
 ########################################################################################################################
 class MM:  #creates the code, allows for input of guesses, checks guessList against theCode
@@ -19,6 +19,7 @@ class MM:  #creates the code, allows for input of guesses, checks guessList agai
         while not valid:        #while the guess isn't valid, keep getting input
             try:
                 print("1=R, 2=O, 3=Y, 4=G, 5=B, 6=V")
+
                 a, b, c, d = input("Input ONLY 4 numbers from 1-6: ")
                 a = int(a)                  #type casting: str -> int
                 b = int(b)
@@ -32,14 +33,17 @@ class MM:  #creates the code, allows for input of guesses, checks guessList agai
                 guessList.append(c)
                 guessList.append(d)
                 valid = True
-                """guessList = [int(x) for x in input().split()]
+                """Trevor's code: len(self.theCode) always = 0
+                guessList = [int(x) for x in input().split()]
+                range_count = 0
                 for x in guessList:
                     if x in self.possible_numbers:
                         range_count += 1
                 if len(guessList) == len(self.theCode) and range_count == len(guessList):
                     valid = True                #if input is valid, continue
                 else:
-                    raise ValueError"""
+                    raise ValueError
+                """
             except(ValueError, TypeError):  #ensures wrong inputs get corrected
                 guessList = []              #reset the guessList to empty
                 print("ONLY 4 numbers from 1-6.")
@@ -98,7 +102,7 @@ def main():
                         print("Code:", code)
             elif wanna == "N" or wanna == "n":          #if no, leave the game
                 ok = True                               #input flag = ok to not play
-                print("Goodbye")
+                print("Ya momma's a hoe.")
             else:                                       #if input other that yes/no...
                 raise ValueError
         except ValueError:                              #...tell them they're wrong
