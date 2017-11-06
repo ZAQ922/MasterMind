@@ -33,8 +33,7 @@ class MM:  #creates the code, allows for input of guesses, checks guessList agai
                 guessList.append(c)
                 guessList.append(d)
                 valid = True
-                """Zaq's code: len(self.theCode) always = 0
-                    Trevor's comment: don't copy word for word and it might work, self.theCode doesn't exist here
+                """Trevor's code: len(self.theCode) always = 0
                 guessList = [int(x) for x in input().split()]
                 range_count = 0
                 for x in guessList:
