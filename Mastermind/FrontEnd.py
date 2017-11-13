@@ -1,4 +1,15 @@
 #__author__ = 'zaq92_000'
+"""
+TODO:
+1)Decide how the player should input their guess
+    A. drag and drop the colors into the corresponding positions
+        a. need to swap out key events for mouse events
+    B. input corresponding numbers in a L>R order
+2)Need a backspace/delete function to fix mistakes before submitting guess
+3)Need a submit button or on 'ENTER' or both
+4)Ensure that only the proper row can have guesses submitted on it
+
+"""
 import pygame
 pygame.init()
 
@@ -62,6 +73,7 @@ while not gameExit:
             gameExit = True
 
         #key catching for moving stuff/needs to become mouse reading
+        #THIS NEEDS TO BECOME MOUSE, ENTER, AND BACKSPACE EVENTS
         #KEYDOWN is for pressing down on the key
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
