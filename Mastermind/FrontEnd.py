@@ -9,6 +9,7 @@ TODO:
 3)Need a submit button or on 'ENTER' or both
     A.Ensure that only the proper row can have guesses submitted on it
         i. Will only change row after "ENTER/SUBMIT" were hit
+        ii. Put guess colors into a list inorder to subpartition, respectively
 """
 import pygame
 pygame.init()
