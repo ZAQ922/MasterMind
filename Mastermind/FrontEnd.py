@@ -9,9 +9,9 @@ TODO:
 3)Need a submit button or on 'ENTER' or both
     A.Ensure that only the proper row can have guesses submitted on it
         i. Will only change row after "ENTER/SUBMIT" were hit
-        ii. Put guess colors into a list inorder to subpartition, respectively
 """
 import pygame
+import random
 pygame.init()
 
 #display attributes
@@ -31,9 +31,10 @@ box11Y = 20
 #top-left pixel position of top score box
 pegboxX = 230
 pegboxY = 20
-#t-l pixel of left most answer box
+#top-left pixel of left most answer box
 answerboxX = 50
 answerboxY = 420
+
 #Color section
 black = (0, 0, 0)
 white = (255, 255, 255)
@@ -47,7 +48,7 @@ purple = (160, 32, 240)
 gsegcolor = black
 #display actual
 gameDisplay = pygame.display.set_mode((display_width, display_height))
-pygame.display.set_caption('Caption')       #display window caption
+pygame.display.set_caption('Mastermind')    #display window caption
 clock = pygame.time.Clock()                 #clock for something
 image = pygame.image.load('board.jpg')      #image to be displayed
 imagewidth = 307#307
@@ -67,6 +68,21 @@ x_change = 0
 y_change = 0
 gameDisplay.fill(white)
 gameExit = False
+global colorlist
+global numberlist
+colorlist = []
+numberlist = []
+
+theCode = []
+possible_numbers = range(1, 7)
+theCode = random.sample(possible_numbers, 4)
+
+
+#this is for handling the guess segments being given from the user
+#turncount = which subpart of the guess are they inputting
+turncount = 0
+subcount = 0
+number = 0
 
 
 #puts an image in the display
@@ -91,73 +107,141 @@ def winMessage():
     message_display('You WIN!')
 
 
-#updateboard(x, y, w, h, color
-def updateboard(guessboxX, guessboxY, guessboxW, guessboxH, color):
-    #draws the color guess over the corresponding box
-    #pygame.draw.rect(where or what object, color, locations[x, y, w, h])
-    pygame.draw.rect(gameDisplay, color, [guessboxX, guessboxY, guessboxW, guessboxH])
-    list = []
-    print("len", len(list))
-    if len(list) < 4:
-        list.append(color)
-    for i in list:
-        print("list", i)
+#updateboard(x, y, w, h, color, backspace)
+def updateboard(guessboxW, guessboxH, color, bspace, scount, tcount, tflag):
+    if not bspace:
+        print("tflag", tflag)
+        print("bspace", bspace)
 
+########################################################################################################################
+        if tflag:
+            print("##############################################")
+            while len(colorlist) > 0:
+                colorlist.pop()
+            while len(numberlist) > 0:
+                numberlist.pop()
+            print("AElenc", len(colorlist))
+            print("AElenN", len(numberlist))
+            print("AEbox11X", box11X)
+            print("AEscount", scount)
+            print("AEguessboxX", guessboxX)
+########################################################################################################################
 
+        if len(colorlist) < 4:
+            colorlist.append(color)
+            #draws the color guess over the corresponding box
+            #pygame.draw.rect(where or what object, color, locations[x, y, w, h]) math for dynamic drawing
+            pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX), box11Y+(tcount*guessboxY), guessboxW, guessboxH])
+            if color == white:
+                numberlist.append(0)
+            elif color == red:
+                numberlist.append(1)
+            elif color == blue:
+                numberlist.append(2)
+            elif color == yellow:
+                numberlist.append(3)
+            elif color == green:
+                numberlist.append(4)
+            elif color == orange:
+                numberlist.append(5)
+            elif color == purple:
+                numberlist.append(6)
+########################################################################################################################
+    else:
+        if len(colorlist) > 0:
+            print("BBlenc", len(colorlist))
+            print("BBlenN", len(numberlist))
+            print("BBbox11X", box11X)
+            print("BBscount", scount)
+            print("BBguessboxX", guessboxX)
+            colorlist.pop()
+            numberlist.pop()
+            if scount == 0:
+                scount = 1
+            pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX), box11Y+(turncount*guessboxY), guessboxW, guessboxH])
+########################################################################################################################
+
+background(x, y)
 while not gameExit:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            gameExit = True
-
-
-    #this is for handling the guess segments being given from the user
-    #segment counter = which subpart of the guess are they inputting
-    background(x, y)
-    segcounter = 1
-    turncount = 1
+    bspace = False
+    turnflag = False
     if turncount < 10:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 gameExit = True
+            #print(event)
+            if subcount <= 0:
+                subcount = 0
+            elif subcount >= 4:
+                subcount = 4
             if event.type == pygame.KEYDOWN:
-                background(x, y)
                 if event.key == pygame.K_0 or event.key == pygame.K_KP0:
                     gsegcolor = white
-                    updateboard(box11X, box11Y, guessboxW, guessboxH, gsegcolor)
-                    segcounter += 1
-                if event.key == pygame.K_1 or event.key == pygame.K_KP1:
+                    updateboard(guessboxW, guessboxH, gsegcolor, bspace, subcount, turncount, turnflag)
+                    subcount += 1
+                elif event.key == pygame.K_1 or event.key == pygame.K_KP1:
                     gsegcolor = red
-                    updateboard(box11X, box11Y, guessboxW, guessboxH, gsegcolor)
-                    segcounter += 1
-                if event.key == pygame.K_2 or event.key == pygame.K_KP2:
+                    updateboard(guessboxW, guessboxH, gsegcolor, bspace, subcount, turncount, turnflag)
+                    subcount += 1
+                elif event.key == pygame.K_2 or event.key == pygame.K_KP2:
                     gsegcolor = blue
-
-                    segcounter += 1
-                if event.key == pygame.K_3 or event.key == pygame.K_KP3:
+                    updateboard(guessboxW, guessboxH, gsegcolor, bspace, subcount, turncount, turnflag)
+                    subcount += 1
+                elif event.key == pygame.K_3 or event.key == pygame.K_KP3:
                     gsegcolor = yellow
-
-                    segcounter += 1
-                if event.key == pygame.K_4 or event.key == pygame.K_KP4:
+                    updateboard(guessboxW, guessboxH, gsegcolor, bspace, subcount, turncount, turnflag)
+                    subcount += 1
+                elif event.key == pygame.K_4 or event.key == pygame.K_KP4:
                     gsegcolor = green
-
-                    segcounter += 1
-                if event.key == pygame.K_5 or event.key == pygame.K_KP5:
+                    updateboard(guessboxW, guessboxH, gsegcolor, bspace, subcount, turncount, turnflag)
+                    subcount += 1
+                elif event.key == pygame.K_5 or event.key == pygame.K_KP5:
                     gsegcolor = orange
-
-                    segcounter += 1
-                if event.key == pygame.K_6 or event.key == pygame.K_KP6:
+                    updateboard(guessboxW, guessboxH, gsegcolor, bspace, subcount, turncount, turnflag)
+                    subcount += 1
+                elif event.key == pygame.K_6 or event.key == pygame.K_KP6:
                     gsegcolor = purple
-
-                    segcounter += 1
-                if event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE or event.key == pygame.K_LEFT:
-                    gsegcolor = white
-
-                    segcounter -= 1
-                print(event)
-                print(gsegcolor)
+                    updateboard(guessboxW, guessboxH, gsegcolor, bspace, subcount, turncount, turnflag)
+                    subcount += 1
+                elif event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE or event.key == pygame.K_LEFT:
+                    gsegcolor = black
+                    bspace = True
+                    subcount -= 1
+                    updateboard(guessboxW, guessboxH, gsegcolor, bspace, subcount, turncount, turnflag)
+                elif event.key == pygame.K_KP_ENTER:
+                    turnflag = True
+                    subcount = 0
+                    #set all ticks to 0
+                    tickB = 0
+                    tickW = 0
+                    none = 0
+                    remaining_code = []
+                    remaining_guess = []
+                    for guess, part in zip(numberlist, theCode):  #index and part of the enumerated guess
+                        if guess == part:                #if it equals the code at this index
+                            tickB += 1
+                        else:
+                            remaining_code.append(part)  #whatever is left, see if it gets a tickW
+                            remaining_guess.append(guess)
+                    for guess in remaining_guess:       #cycle through the remaining guesses
+                        if guess in remaining_code:     #if it's in there, it gets tickW
+                            tickW += 1
+                        #   remaining_code.remove(guess)#can replace the "none += 1"
+                        else:                           #else it doesn't and should be blank
+                            none += 1
+                    if tickB == 4:                                  #when you get 4 black ticks you win
+                        endgame = True                              #for ending the game once you've won
+                        print("YOU WON")                            #banner for winning game
+                    else:                                           #otherwise output ticks to help them solve it
+                        print("code:", theCode)
+                        print("Black:", tickB)                      #banner for mid-game
+                        print("White:", tickW)
+                        print("None:", none)
+                    turncount += 1
+                    updateboard(guessboxW, guessboxH, gsegcolor, bspace, subcount, turncount, turnflag)
 
     else:
-        print("display answer")
+        print("Turncount", turncount)
 
     pygame.display.update()
 pygame.quit()
