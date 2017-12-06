@@ -66,12 +66,15 @@ yMax = display_height - imageheight
 #y changes 1 time per guess
 x_change = 0
 y_change = 0
+#make the display white
 gameDisplay.fill(white)
+#the flag to exit the game
 gameExit = False
+#the colors given from the player
 colorlist = []
+#number complement of the colorlist to compare to theCode
 numberlist = []
-
-#make the code to decrypt
+#the code to decrypt
 theCode = []
 possible_numbers = range(1, 7)
 theCode = random.sample(possible_numbers, 4)
@@ -94,6 +97,7 @@ def text_objects(text, font):
     return textSurface, textSurface.get_rect()
 
 
+#how to change message color?
 def message_display(text):
     largeText = pygame.font.Font('freesansbold.ttf', 45)
     TextSurf, TextRect = text_objects(text, largeText)
@@ -101,13 +105,38 @@ def message_display(text):
     gameDisplay.blit(TextSurf, TextRect)
 
 
-#Displays text to the screen
-def winMessage():
-    message_display('You WIN!')
-
-
-def lossMessage():
-    message_display('FUC')
+def displayAnswer():
+    scount = 0
+    tcount = 10
+    for i in theCode:
+        if i == 0:
+            color = white
+            pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX), box11Y+(tcount*guessboxY), guessboxW, guessboxH])
+            scount += 1
+        elif i == 1:
+            color = red
+            pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX), box11Y+(tcount*guessboxY), guessboxW, guessboxH])
+            scount += 1
+        elif i == 2:
+            color = blue
+            pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX), box11Y+(tcount*guessboxY), guessboxW, guessboxH])
+            scount += 1
+        elif i == 3:
+            color = yellow
+            pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX), box11Y+(tcount*guessboxY), guessboxW, guessboxH])
+            scount += 1
+        elif i == 4:
+            color = green
+            pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX), box11Y+(tcount*guessboxY), guessboxW, guessboxH])
+            scount += 1
+        elif i == 5:
+            color = orange
+            pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX), box11Y+(tcount*guessboxY), guessboxW, guessboxH])
+            scount += 1
+        elif i == 6:
+            color = purple
+            pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX), box11Y+(tcount*guessboxY), guessboxW, guessboxH])
+            scount += 1
 
 
 #updateboard(x, y, w, h, color, backspace)
@@ -127,21 +156,22 @@ def updateboard(guessboxW, guessboxH, color, bspace, scount, tcount, tflag):
             colorlist.append(color)
             #draws the color guess over the corresponding box
             #pygame.draw.rect(where or what object, color, locations[x, y, w, h]) math for dynamic drawing
-            pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX), box11Y+(tcount*guessboxY), guessboxW, guessboxH])
-            if color == white:
-                numberlist.append(0)
-            elif color == red:
-                numberlist.append(1)
-            elif color == blue:
-                numberlist.append(2)
-            elif color == yellow:
-                numberlist.append(3)
-            elif color == green:
-                numberlist.append(4)
-            elif color == orange:
-                numberlist.append(5)
-            elif color == purple:
-                numberlist.append(6)
+            if tcount < 10:
+                pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX), box11Y+(tcount*guessboxY), guessboxW, guessboxH])
+                if color == white:
+                    numberlist.append(0)
+                elif color == red:
+                    numberlist.append(1)
+                elif color == blue:
+                    numberlist.append(2)
+                elif color == yellow:
+                    numberlist.append(3)
+                elif color == green:
+                    numberlist.append(4)
+                elif color == orange:
+                    numberlist.append(5)
+                elif color == purple:
+                    numberlist.append(6)
     else:
         if len(colorlist) > 0:
             colorlist.pop()
@@ -150,7 +180,9 @@ def updateboard(guessboxW, guessboxH, color, bspace, scount, tcount, tflag):
                 scount = 0
             pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX), box11Y+(turncount*guessboxY), guessboxW, guessboxH])
 
+#the board background
 background(x, y)
+#play game loop
 while not gameExit:
     bspace = False
     turnflag = False
@@ -218,9 +250,8 @@ while not gameExit:
                         else:                           #else it doesn't and should be blank
                             none += 1
                     if tickB == 4:                                  #when you get 4 black ticks you win
-                        endgame = True                              #for ending the game once you've won
-                        winMessage()                                #banner for winning game
-                        gameExit = True
+                        message_display("You Won")                  #banner for winning game
+                        displayAnswer()
                     else:                                           #otherwise output ticks to help them solve it
                         print("code:", theCode)
                         print("Black:", tickB)                      #banner for mid-game
@@ -229,10 +260,10 @@ while not gameExit:
                     turncount += 1
                     updateboard(guessboxW, guessboxH, gsegcolor, bspace, subcount, turncount, turnflag)
                     colorlist.pop()
-
     else:
-        lossMessage()
-        gameExit = True
+        message_display('FUC')
+        displayAnswer()
+
 
     pygame.display.update()
 pygame.quit()
