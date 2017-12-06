@@ -68,11 +68,10 @@ x_change = 0
 y_change = 0
 gameDisplay.fill(white)
 gameExit = False
-global colorlist
-global numberlist
 colorlist = []
 numberlist = []
 
+#make the code to decrypt
 theCode = []
 possible_numbers = range(1, 7)
 theCode = random.sample(possible_numbers, 4)
@@ -96,7 +95,7 @@ def text_objects(text, font):
 
 
 def message_display(text):
-    largeText = pygame.font.Font('freesansbold.ttf', 115)
+    largeText = pygame.font.Font('freesansbold.ttf', 45)
     TextSurf, TextRect = text_objects(text, largeText)
     TextRect.center = ((display_width/2), (display_height/2))
     gameDisplay.blit(TextSurf, TextRect)
@@ -107,26 +106,23 @@ def winMessage():
     message_display('You WIN!')
 
 
+def lossMessage():
+    message_display('FUC')
+
+
 #updateboard(x, y, w, h, color, backspace)
 def updateboard(guessboxW, guessboxH, color, bspace, scount, tcount, tflag):
+    #if not backspace pressed
     if not bspace:
-        print("tflag", tflag)
-        print("bspace", bspace)
-
-########################################################################################################################
+        #turn/enter flag
         if tflag:
-            print("##############################################")
             while len(colorlist) > 0:
                 colorlist.pop()
             while len(numberlist) > 0:
                 numberlist.pop()
-            print("AElenc", len(colorlist))
-            print("AElenN", len(numberlist))
-            print("AEbox11X", box11X)
-            print("AEscount", scount)
-            print("AEguessboxX", guessboxX)
-########################################################################################################################
-
+            color = black
+            tflag = False
+        #0-6 input to numberlist
         if len(colorlist) < 4:
             colorlist.append(color)
             #draws the color guess over the corresponding box
@@ -146,20 +142,13 @@ def updateboard(guessboxW, guessboxH, color, bspace, scount, tcount, tflag):
                 numberlist.append(5)
             elif color == purple:
                 numberlist.append(6)
-########################################################################################################################
     else:
         if len(colorlist) > 0:
-            print("BBlenc", len(colorlist))
-            print("BBlenN", len(numberlist))
-            print("BBbox11X", box11X)
-            print("BBscount", scount)
-            print("BBguessboxX", guessboxX)
             colorlist.pop()
             numberlist.pop()
-            if scount == 0:
-                scount = 1
+            if scount < 0:
+                scount = 0
             pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX), box11Y+(turncount*guessboxY), guessboxW, guessboxH])
-########################################################################################################################
 
 background(x, y)
 while not gameExit:
@@ -169,7 +158,6 @@ while not gameExit:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 gameExit = True
-            #print(event)
             if subcount <= 0:
                 subcount = 0
             elif subcount >= 4:
@@ -231,7 +219,8 @@ while not gameExit:
                             none += 1
                     if tickB == 4:                                  #when you get 4 black ticks you win
                         endgame = True                              #for ending the game once you've won
-                        print("YOU WON")                            #banner for winning game
+                        winMessage()                                #banner for winning game
+                        gameExit = True
                     else:                                           #otherwise output ticks to help them solve it
                         print("code:", theCode)
                         print("Black:", tickB)                      #banner for mid-game
@@ -239,9 +228,11 @@ while not gameExit:
                         print("None:", none)
                     turncount += 1
                     updateboard(guessboxW, guessboxH, gsegcolor, bspace, subcount, turncount, turnflag)
+                    colorlist.pop()
 
     else:
-        print("Turncount", turncount)
+        lossMessage()
+        gameExit = True
 
     pygame.display.update()
 pygame.quit()
