@@ -1,14 +1,7 @@
 #__author__ = 'zaq92_000'
 """
 TODO:
-1)Decide how the player should input their guess
-    B. input corresponding numbers in a L>R order
-2)Need a backspace/delete function to fix mistakes before submitting guess
-    A. This needs to replace the square with something like the same background
-        or just greying it out?
-3)Need a submit button or on 'ENTER' or both
-    A.Ensure that only the proper row can have guesses submitted on it
-        i. Will only change row after "ENTER/SUBMIT" were hit
+1)End the game more cleanly?
 """
 import pygame
 import random
@@ -49,19 +42,15 @@ gsegcolor = black
 #display actual
 gameDisplay = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('Mastermind')    #display window caption
-clock = pygame.time.Clock()                 #clock for something
 image = pygame.image.load('board.jpg')      #image to be displayed
 imagewidth = 307#307
 imageheight = 545#545
-
 #image placement(based on it's top-left/origin pixel)
 x = 0
 y = 0
-
 #max/min x/y values the image can go with respect to the size of the images size
 xMax = display_width - imagewidth
 yMax = display_height - imageheight
-
 #x changes 4 times per guess
 #y changes 1 time per guess
 x_change = 0
@@ -78,13 +67,12 @@ numberlist = []
 theCode = []
 possible_numbers = range(0, 7)
 theCode = random.sample(possible_numbers, 4)
-print("Code:", theCode)
-
 #this is for handling the guess segments being given from the user
 #turncount = which subpart of the guess are they inputting
 turncount = 0
 subcount = 0
 number = 0
+#print(theCode)
 
 
 #puts an image in the display
@@ -105,6 +93,7 @@ def message_display(text):
     gameDisplay.blit(TextSurf, TextRect)
 
 
+#colors the bottom with answer
 def displayAnswer():
     scount = 0
     tcount = 10
@@ -308,8 +297,3 @@ while not gameExit:
     pygame.display.update()
 pygame.quit()
 quit()
-
-
-########################################################################################################################
-#if __name__ == '__main__':
-#    main()
