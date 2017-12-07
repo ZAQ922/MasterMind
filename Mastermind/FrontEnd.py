@@ -261,7 +261,6 @@ while not gameExit:
                     subcount -= 1
                     updateboard(guessboxW, guessboxH, gsegcolor, bspace, subcount, turncount, turnflag)
                 elif event.key == pygame.K_KP_ENTER:
-                    turnflag = True
                     subcount = 0
                     #set all ticks to 0
                     tickB = 0
@@ -269,6 +268,16 @@ while not gameExit:
                     none = 0
                     remaining_code = []
                     remaining_guess = []
+                    if not numberlist:
+                        numberlist = [0, 0, 0, 0]
+                        i = 0
+                        while i < 4:
+                            gsegcolor = white
+                            updateboard(guessboxW, guessboxH, gsegcolor, bspace, subcount, turncount, turnflag)
+                            subcount += 1
+                            i += 1
+                        subcount = 0
+                    turnflag = True
                     for guess, part in zip(numberlist, theCode):  #index and part of the enumerated guess
                         if guess == part:                #if it equals the code at this index
                             tickB += 1
@@ -289,6 +298,7 @@ while not gameExit:
                     updatepeg(tickB, tickW, subcount, turncount)
                     turncount += 1
                     updateboard(guessboxW, guessboxH, gsegcolor, bspace, subcount, turncount, turnflag)
+
                     colorlist.pop()
     else:
         message_display('You Lost')
