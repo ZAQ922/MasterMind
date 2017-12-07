@@ -76,9 +76,9 @@ colorlist = []
 numberlist = []
 #the code to decrypt
 theCode = []
-possible_numbers = range(1, 7)
+possible_numbers = range(0, 7)
 theCode = random.sample(possible_numbers, 4)
-
+print("Code:", theCode)
 
 #this is for handling the guess segments being given from the user
 #turncount = which subpart of the guess are they inputting
@@ -139,6 +139,37 @@ def displayAnswer():
             scount += 1
 
 
+#updatepeg(black pegs, white pegs, segment part, turn count)
+def updatepeg(bpegs, wpegs, scount, tcount):
+    segment = 180
+    segpart = 0
+    while bpegs > 0:
+        color = black
+        if segpart == 0:
+            pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX)+(180), box11Y+(tcount*guessboxY)+(0), 19, 19])
+        if segpart == 1:
+            pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX)+(180+19), box11Y+(tcount*guessboxY)+(0), 19, 19])
+        if segpart == 2:
+            pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX)+(180), box11Y+(tcount*guessboxY)+(19), 19, 19])
+        if segpart == 3:
+            pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX)+(180+19), box11Y+(tcount*guessboxY)+(19), 19, 19])
+        bpegs -= 1
+        segpart += 1
+
+    while wpegs > 0:
+        color = white
+        if segpart == 0:
+            pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX)+(180), box11Y+(tcount*guessboxY)+(0), 19, 19])
+        if segpart == 1:
+            pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX)+(180+19), box11Y+(tcount*guessboxY)+(0), 19, 19])
+        if segpart == 2:
+            pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX)+(180), box11Y+(tcount*guessboxY)+(19), 19, 19])
+        if segpart == 3:
+            pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX)+(180+19), box11Y+(tcount*guessboxY)+(19), 19, 19])
+        wpegs -= 1
+        segpart += 1
+
+
 #updateboard(x, y, w, h, color, backspace)
 def updateboard(guessboxW, guessboxH, color, bspace, scount, tcount, tflag):
     #if not backspace pressed
@@ -179,6 +210,7 @@ def updateboard(guessboxW, guessboxH, color, bspace, scount, tcount, tflag):
             if scount < 0:
                 scount = 0
             pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX), box11Y+(turncount*guessboxY), guessboxW, guessboxH])
+
 
 #the board background
 background(x, y)
@@ -252,16 +284,14 @@ while not gameExit:
                     if tickB == 4:                                  #when you get 4 black ticks you win
                         message_display("You Won")                  #banner for winning game
                         displayAnswer()
-                    else:                                           #otherwise output ticks to help them solve it
-                        print("code:", theCode)
-                        print("Black:", tickB)                      #banner for mid-game
-                        print("White:", tickW)
-                        print("None:", none)
+                        updatepeg(tickB, tickW, subcount, turncount)
+                        break
+                    updatepeg(tickB, tickW, subcount, turncount)
                     turncount += 1
                     updateboard(guessboxW, guessboxH, gsegcolor, bspace, subcount, turncount, turnflag)
                     colorlist.pop()
     else:
-        message_display('FUC')
+        message_display('You Lost')
         displayAnswer()
 
 
