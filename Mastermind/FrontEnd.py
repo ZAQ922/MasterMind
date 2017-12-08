@@ -2,6 +2,8 @@
 """
 TODO:
 1)End the game more cleanly?
+2)Some guesses give false pegs, ex.: theCode = [1043], guess = [0101], pegs = 4 white
+                                        [1520],[0122]->[1202],1b 2w -> 1b 3w
 """
 import pygame
 import random
@@ -21,13 +23,6 @@ guessboxY = 40
 #top-left pixel position of top-left box
 box11X = 50
 box11Y = 20
-#top-left pixel position of top score box
-pegboxX = 230
-pegboxY = 20
-#top-left pixel of left most answer box
-answerboxX = 50
-answerboxY = 420
-
 #Color section
 black = (0, 0, 0)
 white = (255, 255, 255)
@@ -43,9 +38,9 @@ gsegcolor = black
 gameDisplay = pygame.display.set_mode((display_width, display_height))
 pygame.display.set_caption('Mastermind')    #display window caption
 image = pygame.image.load('board.jpg')      #image to be displayed
-imagewidth = 307#307
-imageheight = 545#545
-#image placement(based on it's top-left/origin pixel)
+imagewidth = 307
+imageheight = 545
+#background image placement(based on it's top-left/origin pixel)
 x = 0
 y = 0
 #max/min x/y values the image can go with respect to the size of the images size
@@ -59,9 +54,9 @@ y_change = 0
 gameDisplay.fill(white)
 #the flag to exit the game
 gameExit = False
-#the colors given from the player
+#the color guess from the player
 colorlist = []
-#number complement of the colorlist to compare to theCode
+#actual numbers from the guess to compare to theCode
 numberlist = []
 #the code to decrypt
 theCode = []
@@ -80,6 +75,7 @@ def background(x, y):
     gameDisplay.blit(image, (x, y))
 
 
+#just how it renders text
 def text_objects(text, font):
     textSurface = font.render(text, True, black)
     return textSurface, textSurface.get_rect()
@@ -97,44 +93,46 @@ def message_display(text):
 def displayAnswer():
     scount = 0
     tcount = 10
-    for i in theCode:
-        if i == 0:
+    for c in theCode:
+        if c == 0:
             color = white
             pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX), box11Y+(tcount*guessboxY), guessboxW, guessboxH])
             scount += 1
-        elif i == 1:
+        elif c == 1:
             color = red
             pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX), box11Y+(tcount*guessboxY), guessboxW, guessboxH])
             scount += 1
-        elif i == 2:
+        elif c == 2:
             color = blue
             pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX), box11Y+(tcount*guessboxY), guessboxW, guessboxH])
             scount += 1
-        elif i == 3:
+        elif c == 3:
             color = yellow
             pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX), box11Y+(tcount*guessboxY), guessboxW, guessboxH])
             scount += 1
-        elif i == 4:
+        elif c == 4:
             color = green
             pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX), box11Y+(tcount*guessboxY), guessboxW, guessboxH])
             scount += 1
-        elif i == 5:
+        elif c == 5:
             color = orange
             pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX), box11Y+(tcount*guessboxY), guessboxW, guessboxH])
             scount += 1
-        elif i == 6:
+        elif c == 6:
             color = purple
             pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX), box11Y+(tcount*guessboxY), guessboxW, guessboxH])
             scount += 1
 
 
 #updatepeg(black pegs, white pegs, segment part, turn count)
+#peg numbers, calculating the X/Y coords of where the hint should be placed
 def updatepeg(bpegs, wpegs, scount, tcount):
     segment = 180
     segpart = 0
     while bpegs > 0:
         color = black
         if segpart == 0:
+            #last 2 are (19,19) because 18/2=19, math and whatnot
             pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX)+(180), box11Y+(tcount*guessboxY)+(0), 19, 19])
         if segpart == 1:
             pygame.draw.rect(gameDisplay, color, [box11X+(scount*guessboxX)+(180+19), box11Y+(tcount*guessboxY)+(0), 19, 19])
@@ -159,7 +157,7 @@ def updatepeg(bpegs, wpegs, scount, tcount):
         segpart += 1
 
 
-#updateboard(x, y, w, h, color, backspace)
+#updateboard(w, h, color, backspaceflag, segment counter, turn counter, turn flag)
 def updateboard(guessboxW, guessboxH, color, bspace, scount, tcount, tflag):
     #if not backspace pressed
     if not bspace:
@@ -192,6 +190,7 @@ def updateboard(guessboxW, guessboxH, color, bspace, scount, tcount, tflag):
                     numberlist.append(5)
                 elif color == purple:
                     numberlist.append(6)
+    #if backspace pressed
     else:
         if len(colorlist) > 0:
             colorlist.pop()
@@ -207,10 +206,12 @@ background(x, y)
 while not gameExit:
     bspace = False
     turnflag = False
+    #only allow 10 turns
     if turncount < 10:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 gameExit = True
+            #don't write past the 0th/4th guess
             if subcount <= 0:
                 subcount = 0
             elif subcount >= 4:
@@ -249,16 +250,16 @@ while not gameExit:
                     bspace = True
                     subcount -= 1
                     updateboard(guessboxW, guessboxH, gsegcolor, bspace, subcount, turncount, turnflag)
+                #enter triggers the "checkGuess()" from Mastermind.py to validate the guess
                 elif event.key == pygame.K_KP_ENTER:
                     subcount = 0
-                    #set all ticks to 0
                     tickB = 0
                     tickW = 0
                     none = 0
                     remaining_code = []
                     remaining_guess = []
+                    #handle empty list
                     if not numberlist:
-                        numberlist = [0, 0, 0, 0]
                         i = 0
                         while i < 4:
                             gsegcolor = white
@@ -267,17 +268,17 @@ while not gameExit:
                             i += 1
                         subcount = 0
                     turnflag = True
-                    for guess, part in zip(numberlist, theCode):  #index and part of the enumerated guess
-                        if guess == part:                #if it equals the code at this index
+                    #do the comparison and get the pegs
+                    for guess, part in zip(numberlist, theCode):    #index and part of the enumerated guess
+                        if guess == part:                           #if it equals the code at this index
                             tickB += 1
                         else:
-                            remaining_code.append(part)  #whatever is left, see if it gets a tickW
+                            remaining_code.append(part)             #whatever is left, see if it gets a tickW
                             remaining_guess.append(guess)
-                    for guess in remaining_guess:       #cycle through the remaining guesses
-                        if guess in remaining_code:     #if it's in there, it gets tickW
+                    for guess in remaining_guess:                   #cycle through the remaining guesses
+                        if guess in remaining_code:                 #if it's in there, it gets tickW
                             tickW += 1
-                        #   remaining_code.remove(guess)#can replace the "none += 1"
-                        else:                           #else it doesn't and should be blank
+                        else:                                       #else it doesn't and should be blank
                             none += 1
                     if tickB == 4:                                  #when you get 4 black ticks you win
                         message_display("You Won")                  #banner for winning game
@@ -287,7 +288,6 @@ while not gameExit:
                     updatepeg(tickB, tickW, subcount, turncount)
                     turncount += 1
                     updateboard(guessboxW, guessboxH, gsegcolor, bspace, subcount, turncount, turnflag)
-
                     colorlist.pop()
     else:
         message_display('You Lost')
